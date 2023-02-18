@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PbzjcqRecordMapper">
+    
+    <resultMap type="PbzjcqRecord" id="PbzjcqRecordResult">
+        <result property="id"    column="id"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="specialistId"    column="specialist_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="zbx"    column="zbx"    />
+    </resultMap>
+
+    <sql id="selectPbzjcqRecordVo">
+        select id, project_id, specialist_id, create_time, zbx from pbzjcq_record
+    </sql>
+
+    <select id="selectPbzjcqRecordList" parameterType="PbzjcqRecord" resultMap="PbzjcqRecordResult">
+        <include refid="selectPbzjcqRecordVo"/>
+        <where>  
+            <if test="projectId != null "> and project_id = #{projectId}</if>
+            <if test="specialistId != null "> and specialist_id = #{specialistId}</if>
+            <if test="zbx != null  and zbx != ''"> and zbx = #{zbx}</if>
+        </where>
+    </select>
+    
+    <select id="selectPbzjcqRecordById" parameterType="Long" resultMap="PbzjcqRecordResult">
+        <include refid="selectPbzjcqRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertPbzjcqRecord" parameterType="PbzjcqRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into pbzjcq_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">project_id,</if>
+            <if test="specialistId != null">specialist_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="zbx != null">zbx,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectId != null">#{projectId},</if>
+            <if test="specialistId != null">#{specialistId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="zbx != null">#{zbx},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePbzjcqRecord" parameterType="PbzjcqRecord">
+        update pbzjcq_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="specialistId != null">specialist_id = #{specialistId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="zbx != null">zbx = #{zbx},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePbzjcqRecordById" parameterType="Long">
+        delete from pbzjcq_record where id = #{id}
+    </delete>
+
+    <delete id="deletePbzjcqRecordByIds" parameterType="String">
+        delete from pbzjcq_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
