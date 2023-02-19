@@ -35,7 +35,7 @@ public class PbzjcqSpecialist extends BaseEntity
     private String addr;
 
     /** 跟进状态 */
-    @Excel(name = "跟进状态")
+    @Excel(name = "专家状态")
     private String status;
 
     /** 被抽取专业 */

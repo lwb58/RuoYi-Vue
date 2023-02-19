@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PbzjcqCqDetailMapper">
+    
+    <resultMap type="PbzjcqCqDetail" id="PbzjcqCqDetailResult">
+        <result property="id"    column="id"    />
+        <result property="recordId"    column="record_id"    />
+        <result property="specialistId"    column="specialist_id"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="gjzt"    column="gjzt"    />
+    </resultMap>
+
+    <sql id="selectPbzjcqCqDetailVo">
+        select id, record_id, specialist_id, project_id, gjzt from pbzjcq_cq_detail
+    </sql>
+
+    <select id="selectPbzjcqCqDetailList" parameterType="PbzjcqCqDetail" resultMap="PbzjcqCqDetailResult">
+        <include refid="selectPbzjcqCqDetailVo"/>
+        <where>  
+            <if test="recordId != null "> and record_id = #{recordId}</if>
+            <if test="specialistId != null "> and specialist_id = #{specialistId}</if>
+            <if test="projectId != null "> and project_id = #{projectId}</if>
+            <if test="gjzt != null  and gjzt != ''"> and gjzt = #{gjzt}</if>
+        </where>
+    </select>
+    
+    <select id="selectPbzjcqCqDetailById" parameterType="Long" resultMap="PbzjcqCqDetailResult">
+        <include refid="selectPbzjcqCqDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertPbzjcqCqDetail" parameterType="PbzjcqCqDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into pbzjcq_cq_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">record_id,</if>
+            <if test="specialistId != null">specialist_id,</if>
+            <if test="projectId != null">project_id,</if>
+            <if test="gjzt != null">gjzt,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">#{recordId},</if>
+            <if test="specialistId != null">#{specialistId},</if>
+            <if test="projectId != null">#{projectId},</if>
+            <if test="gjzt != null">#{gjzt},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePbzjcqCqDetail" parameterType="PbzjcqCqDetail">
+        update pbzjcq_cq_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="recordId != null">record_id = #{recordId},</if>
+            <if test="specialistId != null">specialist_id = #{specialistId},</if>
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="gjzt != null">gjzt = #{gjzt},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePbzjcqCqDetailById" parameterType="Long">
+        delete from pbzjcq_cq_detail where id = #{id}
+    </delete>
+
+    <delete id="deletePbzjcqCqDetailByIds" parameterType="String">
+        delete from pbzjcq_cq_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

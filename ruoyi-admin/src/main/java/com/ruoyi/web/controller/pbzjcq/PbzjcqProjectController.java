@@ -1,7 +1,11 @@
 package com.ruoyi.web.controller.pbzjcq;
 
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,14 +27,13 @@ import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
  * 【请填写功能名称】Controller
- * 
+ *
  * @author ruoyi
  * @date 2023-02-18
  */
 @RestController
 @RequestMapping("/system/project")
-public class PbzjcqProjectController extends BaseController
-{
+public class PbzjcqProjectController extends BaseController {
     @Autowired
     private IPbzjcqProjectService pbzjcqProjectService;
 
@@ -39,9 +42,27 @@ public class PbzjcqProjectController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:project:list')")
     @GetMapping("/list")
-    public TableDataInfo list(PbzjcqProject pbzjcqProject)
-    {
+    public TableDataInfo list(PbzjcqProject pbzjcqProject) {
         startPage();
+        Date startTime = pbzjcqProject.getStartTime();
+        if (null != startTime) {
+            DateTime dateTime = DateUtil.endOfDay(startTime);
+            pbzjcqProject.setEndTime(dateTime);
+        }
+        List<PbzjcqProject> list = pbzjcqProjectService.selectPbzjcqProjectList(pbzjcqProject);
+        return getDataTable(list);
+    }
+
+    /*为所选项目抽取专家*/
+    @PreAuthorize("@ss.hasPermi('system:project:cqzj')")
+    @Log(title = "抽取专家", businessType = BusinessType.CQZJ)
+    @PostMapping("/cqzj")
+    public TableDataInfo cqzj(PbzjcqProject pbzjcqProject) {
+        startPage();
+        Long rates = pbzjcqProject.getRates();
+        Long amounts = pbzjcqProject.getAmounts();
+        Long days = pbzjcqProject.getDays();
+
         List<PbzjcqProject> list = pbzjcqProjectService.selectPbzjcqProjectList(pbzjcqProject);
         return getDataTable(list);
     }
@@ -52,8 +73,7 @@ public class PbzjcqProjectController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:project:export')")
     @Log(title = "【请填写功能名称】", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, PbzjcqProject pbzjcqProject)
-    {
+    public void export(HttpServletResponse response, PbzjcqProject pbzjcqProject) {
         List<PbzjcqProject> list = pbzjcqProjectService.selectPbzjcqProjectList(pbzjcqProject);
         ExcelUtil<PbzjcqProject> util = new ExcelUtil<PbzjcqProject>(PbzjcqProject.class);
         util.exportExcel(response, list, "【请填写功能名称】数据");
@@ -64,8 +84,7 @@ public class PbzjcqProjectController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:project:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(pbzjcqProjectService.selectPbzjcqProjectById(id));
     }
 
@@ -75,8 +94,7 @@ public class PbzjcqProjectController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:project:add')")
     @Log(title = "【请填写功能名称】", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody PbzjcqProject pbzjcqProject)
-    {
+    public AjaxResult add(@RequestBody PbzjcqProject pbzjcqProject) {
         return toAjax(pbzjcqProjectService.insertPbzjcqProject(pbzjcqProject));
     }
 
@@ -86,8 +104,7 @@ public class PbzjcqProjectController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:project:edit')")
     @Log(title = "【请填写功能名称】", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody PbzjcqProject pbzjcqProject)
-    {
+    public AjaxResult edit(@RequestBody PbzjcqProject pbzjcqProject) {
         return toAjax(pbzjcqProjectService.updatePbzjcqProject(pbzjcqProject));
     }
 
@@ -96,9 +113,8 @@ public class PbzjcqProjectController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:project:remove')")
     @Log(title = "【请填写功能名称】", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(pbzjcqProjectService.deletePbzjcqProjectByIds(ids));
     }
 }

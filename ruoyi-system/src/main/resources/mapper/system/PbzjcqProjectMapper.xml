@@ -1,51 +1,67 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.PbzjcqProjectMapper">
-    
+
     <resultMap type="PbzjcqProject" id="PbzjcqProjectResult">
-        <result property="id"    column="id"    />
-        <result property="projectName"    column="project_name"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="projAddr"    column="proj_addr"    />
-        <result property="oper"    column="oper"    />
-        <result property="mobile"    column="mobile"    />
-        <result property="department"    column="department"    />
-        <result property="startTime"    column="start_time"    />
-        <result property="addr"    column="addr"    />
-        <result property="days"    column="days"    />
-        <result property="amounts"    column="amounts"    />
-        <result property="rates"    column="rates"    />
-        <result property="zbfs"    column="zbfs"    />
+        <result property="id" column="id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="projAddr" column="proj_addr"/>
+        <result property="oper" column="oper"/>
+        <result property="mobile" column="mobile"/>
+        <result property="department" column="department"/>
+        <result property="startTime" column="start_time"/>
+        <result property="addr" column="addr"/>
+        <result property="days" column="days"/>
+        <result property="amounts" column="amounts"/>
+        <result property="rates" column="rates"/>
+        <result property="zbfs" column="zbfs"/>
     </resultMap>
 
     <sql id="selectPbzjcqProjectVo">
-        select id, project_name, create_time, proj_addr, oper, mobile, department, start_time, addr, days, amounts, rates, zbfs from pbzjcq_project
+        select id,
+               project_name,
+               create_time,
+               proj_addr,
+               oper,
+               mobile,
+               department,
+               start_time,
+               addr,
+               days,
+               amounts,
+               rates,
+               zbfs
+        from pbzjcq_project
     </sql>
 
     <select id="selectPbzjcqProjectList" parameterType="PbzjcqProject" resultMap="PbzjcqProjectResult">
         <include refid="selectPbzjcqProjectVo"/>
-        <where>  
-            <if test="projectName != null  and projectName != ''"> and project_name like concat('%', #{projectName}, '%')</if>
-            <if test="projAddr != null  and projAddr != ''"> and proj_addr = #{projAddr}</if>
-            <if test="oper != null  and oper != ''"> and oper = #{oper}</if>
-            <if test="mobile != null  and mobile != ''"> and mobile = #{mobile}</if>
-            <if test="department != null  and department != ''"> and department = #{department}</if>
-            <if test="startTime != null "> and start_time = #{startTime}</if>
-            <if test="addr != null  and addr != ''"> and addr = #{addr}</if>
-            <if test="days != null "> and days = #{days}</if>
-            <if test="amounts != null "> and amounts = #{amounts}</if>
-            <if test="rates != null "> and rates = #{rates}</if>
-            <if test="zbfs != null  and zbfs != ''"> and zbfs = #{zbfs}</if>
+        <where>
+            <if test="projectName != null  and projectName != ''">and project_name like concat('%', #{projectName},
+                '%')
+            </if>
+            <if test="projAddr != null  and projAddr != ''">and proj_addr = #{projAddr}</if>
+            <if test="oper != null  and oper != ''">and oper = #{oper}</if>
+            <if test="mobile != null  and mobile != ''">and mobile = #{mobile}</if>
+            <if test="department != null  and department != ''">and department = #{department}</if>
+            <if test="startTime != null ">and (start_time &gt; #{startTime})</if>
+            <if test="endTime != null ">and (start_time &lt; #{endTime})</if>
+            <if test="addr != null  and addr != ''">and addr = #{addr}</if>
+            <if test="days != null ">and days = #{days}</if>
+            <if test="amounts != null ">and amounts = #{amounts}</if>
+            <if test="rates != null ">and rates = #{rates}</if>
+            <if test="zbfs != null  and zbfs != ''">and zbfs = #{zbfs}</if>
         </where>
     </select>
-    
+
     <select id="selectPbzjcqProjectById" parameterType="Long" resultMap="PbzjcqProjectResult">
         <include refid="selectPbzjcqProjectVo"/>
         where id = #{id}
     </select>
-        
+
     <insert id="insertPbzjcqProject" parameterType="PbzjcqProject" useGeneratedKeys="true" keyProperty="id">
         insert into pbzjcq_project
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -61,7 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="amounts != null">amounts,</if>
             <if test="rates != null">rates,</if>
             <if test="zbfs != null">zbfs,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="projectName != null">#{projectName},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -75,7 +91,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="amounts != null">#{amounts},</if>
             <if test="rates != null">#{rates},</if>
             <if test="zbfs != null">#{zbfs},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updatePbzjcqProject" parameterType="PbzjcqProject">
@@ -98,11 +114,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deletePbzjcqProjectById" parameterType="Long">
-        delete from pbzjcq_project where id = #{id}
+        delete
+        from pbzjcq_project
+        where id = #{id}
     </delete>
 
     <delete id="deletePbzjcqProjectByIds" parameterType="String">
-        delete from pbzjcq_project where id in 
+        delete from pbzjcq_project where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

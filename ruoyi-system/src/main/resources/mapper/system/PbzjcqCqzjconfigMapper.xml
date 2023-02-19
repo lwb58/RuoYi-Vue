@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PbzjcqCqzjconfigMapper">
+    
+    <resultMap type="PbzjcqCqzjconfig" id="PbzjcqCqzjconfigResult">
+        <result property="id"    column="id"    />
+        <result property="projectId"    column="project_id"    />
+        <result property="zjlb"    column="zjlb"    />
+        <result property="cpzy"    column="cpzy"    />
+        <result property="rs"    column="rs"    />
+    </resultMap>
+
+    <sql id="selectPbzjcqCqzjconfigVo">
+        select id, project_id, zjlb, cpzy, rs from pbzjcq_cqzjconfig
+    </sql>
+
+    <select id="selectPbzjcqCqzjconfigList" parameterType="PbzjcqCqzjconfig" resultMap="PbzjcqCqzjconfigResult">
+        <include refid="selectPbzjcqCqzjconfigVo"/>
+        <where>  
+            <if test="projectId != null "> and project_id = #{projectId}</if>
+            <if test="zjlb != null  and zjlb != ''"> and zjlb = #{zjlb}</if>
+            <if test="cpzy != null  and cpzy != ''"> and cpzy = #{cpzy}</if>
+            <if test="rs != null "> and rs = #{rs}</if>
+        </where>
+    </select>
+    
+    <select id="selectPbzjcqCqzjconfigById" parameterType="Long" resultMap="PbzjcqCqzjconfigResult">
+        <include refid="selectPbzjcqCqzjconfigVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertPbzjcqCqzjconfig" parameterType="PbzjcqCqzjconfig">
+        insert into pbzjcq_cqzjconfig
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="projectId != null">project_id,</if>
+            <if test="zjlb != null and zjlb != ''">zjlb,</if>
+            <if test="cpzy != null and cpzy != ''">cpzy,</if>
+            <if test="rs != null">rs,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="projectId != null">#{projectId},</if>
+            <if test="zjlb != null and zjlb != ''">#{zjlb},</if>
+            <if test="cpzy != null and cpzy != ''">#{cpzy},</if>
+            <if test="rs != null">#{rs},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePbzjcqCqzjconfig" parameterType="PbzjcqCqzjconfig">
+        update pbzjcq_cqzjconfig
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id = #{projectId},</if>
+            <if test="zjlb != null and zjlb != ''">zjlb = #{zjlb},</if>
+            <if test="cpzy != null and cpzy != ''">cpzy = #{cpzy},</if>
+            <if test="rs != null">rs = #{rs},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePbzjcqCqzjconfigById" parameterType="Long">
+        delete from pbzjcq_cqzjconfig where id = #{id}
+    </delete>
+
+    <delete id="deletePbzjcqCqzjconfigByIds" parameterType="String">
+        delete from pbzjcq_cqzjconfig where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

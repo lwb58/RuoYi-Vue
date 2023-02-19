@@ -45,6 +45,19 @@ public class PbzjcqProject extends BaseEntity
     @Excel(name = "评标开始时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "评标开始时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date endTime;
+
+
     /** 评标地点 */
     @Excel(name = "评标地点")
     private String addr;

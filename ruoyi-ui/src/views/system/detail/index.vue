@@ -1,50 +1,34 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="90px">
-      <el-form-item label="专家姓名" prop="name">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="抽奖批次号" prop="recordId">
         <el-input
-          v-model="queryParams.name"
-          placeholder="请输入专家姓名"
+          v-model="queryParams.recordId"
+          placeholder="请输入抽奖批次号"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="移动电话" prop="phone">
+      <el-form-item label="专家序号" prop="specialistId">
         <el-input
-          v-model="queryParams.phone"
-          placeholder="请输入移动电话"
+          v-model="queryParams.specialistId"
+          placeholder="请输入专家序号"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="地址" prop="addr">
+      <el-form-item label="项目编号" prop="projectId">
         <el-input
-          v-model="queryParams.addr"
-          placeholder="请输入地址"
+          v-model="queryParams.projectId"
+          placeholder="请输入项目编号"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="被抽取专业" prop="zhuanye">
+      <el-form-item label="跟进状态" prop="gjzt">
         <el-input
-          v-model="queryParams.zhuanye"
-          placeholder="请输入被抽取专业"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="固定电话" prop="tel">
-        <el-input
-          v-model="queryParams.tel"
-          placeholder="请输入固定电话"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="专家单位" prop="company">
-        <el-input
-          v-model="queryParams.company"
-          placeholder="请输入专家单位"
+          v-model="queryParams.gjzt"
+          placeholder="请输入跟进状态"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -63,7 +47,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:specialist:add']"
+          v-hasPermi="['system:detail:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -74,7 +58,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:specialist:edit']"
+          v-hasPermi="['system:detail:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -85,7 +69,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:specialist:remove']"
+          v-hasPermi="['system:detail:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -95,23 +79,19 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:specialist:export']"
+          v-hasPermi="['system:detail:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="specialistList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="专家编号" align="center" prop="id" />
-      <el-table-column label="专家姓名" align="center" prop="name" />
-      <el-table-column label="专业类别" align="center" prop="type" />
-      <el-table-column label="移动电话" align="center" prop="phone" />
-      <el-table-column label="地址" align="center" prop="addr" />
-      <el-table-column label="专家状态" align="center" prop="status" />
-      <el-table-column label="被抽取专业" align="center" prop="zhuanye" />
-      <el-table-column label="固定电话" align="center" prop="tel" />
-      <el-table-column label="专家单位" align="center" prop="company" />
+      <el-table-column label="序号" align="center" prop="id" />
+      <el-table-column label="抽奖批次号" align="center" prop="recordId" />
+      <el-table-column label="专家序号" align="center" prop="specialistId" />
+      <el-table-column label="项目编号" align="center" prop="projectId" />
+      <el-table-column label="跟进状态" align="center" prop="gjzt" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -119,19 +99,19 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:specialist:edit']"
+            v-hasPermi="['system:detail:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:specialist:remove']"
+            v-hasPermi="['system:detail:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    
     <pagination
       v-show="total>0"
       :total="total"
@@ -142,24 +122,18 @@
 
     <!-- 添加或修改【请填写功能名称】对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="专家姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入专家姓名" />
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="抽奖批次号" prop="recordId">
+          <el-input v-model="form.recordId" placeholder="请输入抽奖批次号" />
         </el-form-item>
-        <el-form-item label="移动电话" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入移动电话" />
+        <el-form-item label="专家序号" prop="specialistId">
+          <el-input v-model="form.specialistId" placeholder="请输入专家序号" />
         </el-form-item>
-        <el-form-item label="地址" prop="addr">
-          <el-input v-model="form.addr" placeholder="请输入地址" />
+        <el-form-item label="项目编号" prop="projectId">
+          <el-input v-model="form.projectId" placeholder="请输入项目编号" />
         </el-form-item>
-        <el-form-item label="被抽取专业" prop="zhuanye">
-          <el-input v-model="form.zhuanye" placeholder="请输入被抽取专业" />
-        </el-form-item>
-        <el-form-item label="固定电话" prop="tel">
-          <el-input v-model="form.tel" placeholder="请输入固定电话" />
-        </el-form-item>
-        <el-form-item label="专家单位" prop="company">
-          <el-input v-model="form.company" placeholder="请输入专家单位" />
+        <el-form-item label="跟进状态" prop="gjzt">
+          <el-input v-model="form.gjzt" placeholder="请输入跟进状态" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -171,10 +145,10 @@
 </template>
 
 <script>
-import { listSpecialist, getSpecialist, delSpecialist, addSpecialist, updateSpecialist } from "@/api/system/specialist";
+import { listDetail, getDetail, delDetail, addDetail, updateDetail } from "@/api/system/detail";
 
 export default {
-  name: "Specialist",
+  name: "Detail",
   data() {
     return {
       // 遮罩层
@@ -190,7 +164,7 @@ export default {
       // 总条数
       total: 0,
       // 【请填写功能名称】表格数据
-      specialistList: [],
+      detailList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -199,19 +173,24 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        name: null,
-        type: null,
-        phone: null,
-        addr: null,
-        status: null,
-        zhuanye: null,
-        tel: null,
-        company: null
+        recordId: null,
+        specialistId: null,
+        projectId: null,
+        gjzt: null
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
+        recordId: [
+          { required: true, message: "抽奖批次号不能为空", trigger: "blur" }
+        ],
+        specialistId: [
+          { required: true, message: "专家序号不能为空", trigger: "blur" }
+        ],
+        projectId: [
+          { required: true, message: "项目编号不能为空", trigger: "blur" }
+        ],
       }
     };
   },
@@ -222,8 +201,8 @@ export default {
     /** 查询【请填写功能名称】列表 */
     getList() {
       this.loading = true;
-      listSpecialist(this.queryParams).then(response => {
-        this.specialistList = response.rows;
+      listDetail(this.queryParams).then(response => {
+        this.detailList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -237,15 +216,10 @@ export default {
     reset() {
       this.form = {
         id: null,
-        name: null,
-        type: null,
-        phone: null,
-        addr: null,
-        status: null,
-        zhuanye: null,
-        createTime: null,
-        tel: null,
-        company: null
+        recordId: null,
+        specialistId: null,
+        projectId: null,
+        gjzt: null
       };
       this.resetForm("form");
     },
@@ -269,16 +243,16 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加专家";
+      this.title = "添加【请填写功能名称】";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getSpecialist(id).then(response => {
+      getDetail(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改专家信息";
+        this.title = "修改【请填写功能名称】";
       });
     },
     /** 提交按钮 */
@@ -286,13 +260,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateSpecialist(this.form).then(response => {
+            updateDetail(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addSpecialist(this.form).then(response => {
+            addDetail(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -304,8 +278,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除专家编号为"' + ids + '"的数据项？').then(function() {
-        return delSpecialist(ids);
+      this.$modal.confirm('是否确认删除【请填写功能名称】编号为"' + ids + '"的数据项？').then(function() {
+        return delDetail(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -313,9 +287,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/specialist/export', {
+      this.download('system/detail/export', {
         ...this.queryParams
-      }, `specialist_${new Date().getTime()}.xlsx`)
+      }, `detail_${new Date().getTime()}.xlsx`)
     }
   }
 };

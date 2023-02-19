@@ -143,6 +143,18 @@
         >导出
         </el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-orange"
+          size="mini"
+          :disabled="multiple"
+          @click="cqzj"
+          v-hasPermi="['system:project:cqzj']"
+        >抽取专家
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -251,7 +263,7 @@
 </template>
 
 <script>
-import {listProject, getProject, delProject, addProject, updateProject} from "@/api/system/project";
+import {listProject, getProject, delProject, addProject, updateProject, cqzj} from "@/api/system/project";
 
 export default {
   name: "Project",
@@ -425,6 +437,17 @@ export default {
       this.download('system/project/export', {
         ...this.queryParams
       }, `project_${new Date().getTime()}.xlsx`)
+    },
+    /* 抽取专家*/
+    cqzj(row) {
+      const ids = row.id || this.ids;
+      this.$modal.confirm('是否确认为项目编号为"' + ids + '"的项目抽取专家？').then(function () {
+        return cqzj(ids);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("抽取结束");
+      }).catch(() => {
+      });
     }
   }
 };
