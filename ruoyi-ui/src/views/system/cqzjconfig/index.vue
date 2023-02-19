@@ -137,9 +137,9 @@
 
     <!-- 添加或修改抽取专家设置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="dynamicValidateForm" :model="dynamicValidateForm" :rules="rules" label-width="80px">
         <el-form-item label="项目名称" prop="projectName">
-          <el-select v-model="form.projectName" placeholder="项目名称" clearable filterable
+          <el-select v-model="dynamicValidateForm.projectName" placeholder="项目名称" clearable filterable
                      remote
                      :remote-method="searchProjectByName"
                      v-on:change="change"
@@ -154,35 +154,50 @@
           <!--          <el-input v-model="form.zjlb" placeholder="请输入专家类别" />-->
         </el-form-item>
         <el-form-item label="项目编号" prop="projectId">
-          <el-input v-model="form.projectId" placeholder="请输入项目编号" :disabled="true"/>
+          <el-input v-model="dynamicValidateForm.projectId" placeholder="请输入项目编号" :disabled="true"/>
         </el-form-item>
-        <el-form-item label="专家类别" prop="zjlb">
-          <el-select v-model="form.zjlb" placeholder="专家类别" clearable>
-            <el-option
-              v-for="dict in zjlbOptions"
-              :key="dict.dictValue"
-              :label="dict.dictLabel"
-              :value="dict.dictValue"
-            />
-          </el-select>
-          <!--          <el-input v-model="form.zjlb" placeholder="请输入专家类别" />-->
+        <el-form-item
+          v-for="(zjzy, index) in dynamicValidateForm.zjzys"
+          :label="'专家类别' + index"
+          :key="zjzy.key"
+          :prop="'zjzys.' + index + '.value'"
+        >
+          <el-row>
+            <el-col :span="8">
+              <el-select v-model="zjzy.zjlb" placeholder="专家类别" clearable
+                         :rules="{required: true, message: '专家类别不能为空', trigger: 'blur'}">
+                <el-option
+                  v-for="dict in zjlbOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictLabel"
+                  :value="dict.dictValue"
+                />
+              </el-select>
+            </el-col>
+            <el-col :span="8">
+              <el-select v-model="zjzy.cpzy" placeholder="参评专业" clearable
+                         :rules="{required: true, message: '参评专业不能为空', trigger: 'blur'}">
+                <el-option
+                  v-for="dict in cpzyOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictLabel"
+                  :value="dict.dictValue"
+                />
+              </el-select>
+            </el-col>
+            <el-col :span="8">
+              <el-button @click.prevent="removeZjzy(zjzy)">删除</el-button>
+            </el-col>
+          </el-row>
         </el-form-item>
-        <el-form-item label="参评专业" prop="cpzy">
-          <el-select v-model="form.zjlb" placeholder="专家类别" clearable>
-            <el-option
-              v-for="dict in cpzyOptions"
-              :key="dict.dictValue"
-              :label="dict.dictLabel"
-              :value="dict.dictValue"
-            />
-          </el-select>
-          <!--          <el-input v-model="form.cpzy" placeholder="请输入参评专业"/>-->
-        </el-form-item>
+
+
         <el-form-item label="抽取人数" prop="rs">
-          <el-input v-model="form.rs" placeholder="请输入抽取人数"/>
+          <el-input v-model="dynamicValidateForm.rs" placeholder="请输入抽取人数"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
+        <el-button @click="addZjzy">添加专业类别</el-button>
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
@@ -198,6 +213,7 @@ export default {
   name: "Cqzjconfig",
   data() {
     return {
+      dynamicValidateForm: {},
       zjlbOptions: [],
       cpzyOptions: [],
       projectNameOptions: [],
@@ -229,19 +245,17 @@ export default {
         rs: null,
         projectName: null
       },
-      // 表单参数
-      form: {},
       // 表单校验
       rules: {
         projectId: [
           {required: true, message: "项目编号不能为空", trigger: "blur"}
         ],
-        zjlb: [
+        /*zjlb: [
           {required: true, message: "专家类别不能为空", trigger: "blur"}
         ],
         cpzy: [
           {required: true, message: "参评专业不能为空", trigger: "blur"}
-        ],
+        ],*/
         rs: [
           {required: true, message: "抽取人数不能为空", trigger: "blur"}
         ],
@@ -257,12 +271,29 @@ export default {
       this.zjlbOptions = response.data;
     });
     this.getDicts("cpzy").then(response => {
-      this.cpzyOptions = response.data;
+      this.cpzyOptions_all = response.data;
     });
   },
   methods: {
+    removeZjzy(item) {
+      var index = this.dynamicValidateForm.zjzys.indexOf(item)
+      if (index !== -1) {
+        this.dynamicValidateForm.zjzys.splice(index, 1)
+      }
+    },
+    addZjzy() {
+      this.dynamicValidateForm.zjzys.push({
+        value: '',
+        key: Date.now()
+      });
+    },
     change(query) {
       console.log(query)
+    },
+    changeZjlb(param) {
+      if (param.indexOf('sw')) {
+        console.log(param)
+      }
     },
     searchProjectByName(query) {
       if (query !== '') {
@@ -293,15 +324,16 @@ export default {
     },
     // 表单重置
     reset() {
-      this.form = {
+      this.dynamicValidateForm = {
         id: null,
         projectId: null,
         zjlb: null,
         cpzy: null,
         rs: null,
-        projectName: null
+        projectName: null,
+        zjzys: []
       };
-      this.resetForm("form");
+      this.resetForm("dynamicValidateForm");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -330,23 +362,23 @@ export default {
       this.reset();
       const id = row.id || this.ids
       getCqzjconfig(id).then(response => {
-        this.form = response.data;
+        this.dynamicValidateForm = response.data;
         this.open = true;
         this.title = "修改抽取专家设置";
       });
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs["dynamicValidateForm"].validate(valid => {
         if (valid) {
-          if (this.form.id != null) {
-            updateCqzjconfig(this.form).then(response => {
+          if (this.dynamicValidateForm.id != null) {
+            updateCqzjconfig(this.dynamicValidateForm).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addCqzjconfig(this.form).then(response => {
+            addCqzjconfig(this.dynamicValidateForm).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
