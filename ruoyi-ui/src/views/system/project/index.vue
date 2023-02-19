@@ -42,17 +42,11 @@
         />
       </el-form-item>
       <el-form-item label="评标开始时间" prop="startTime">
-        <!--        <el-date-picker clearable
-                                v-model="queryParams.startTime"
-                                type="date"
-                                value-format="yyyy-MM-dd"
-                                placeholder="请选择评标开始时间">
-                </el-date-picker>-->
-        <el-date-picker
-          v-model="queryParams.startTime"
-          type="datetime"
-          placeholder="请选择评标开始时间"
-          align="right">
+        <el-date-picker clearable
+                        v-model="queryParams.startTime"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        placeholder="请选择评标开始时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="评标地点" prop="addr">
@@ -162,7 +156,7 @@
       <el-table-column label="监督部门" align="center" prop="department"/>
       <el-table-column label="评标开始时间" align="center" prop="startTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.startTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.startTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="评标地点" align="center" prop="addr"/>
@@ -219,19 +213,13 @@
           <el-input v-model="form.department" placeholder="请输入监督部门"/>
         </el-form-item>
         <el-form-item label="评标开始时间" prop="startTime">
-          <el-date-picker
-            v-model="form.startTime"
-            type="datetime"
-            placeholder="请选择评标开始时间"
-            align="right"
-            :picker-options="pickerOptions">
+          <el-date-picker clearable
+                          v-model="form.startTime"
+                          type="datetime"
+                          value-format="yyyy-MM-dd HH:mm:ss"
+                          :picker-options="pickerOptions"
+                          placeholder="请选择评标开始时间">
           </el-date-picker>
-          <!--          <el-date-picker clearable
-                                    v-model="form.startTime"
-                                    type="date"
-                                    value-format="yyyy-MM-dd"
-                                    placeholder="请选择评标开始时间">
-                    </el-date-picker>-->
         </el-form-item>
         <el-form-item label="评标地点" prop="addr">
           <el-input v-model="form.addr" placeholder="请输入评标地点"/>
@@ -291,6 +279,7 @@ export default {
           }
         }]
       },
+      value2: '',
       // 遮罩层
       loading: true,
       // 选中数组
