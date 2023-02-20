@@ -165,6 +165,7 @@
           <el-row>
             <el-col :span="8">
               <el-select v-model="zjzy.zjlb" placeholder="专家类别" clearable
+                         v-on:change="changeZjlb($event,index)"
                          :rules="{required: true, message: '专家类别不能为空', trigger: 'blur'}">
                 <el-option
                   v-for="dict in zjlbOptions"
@@ -177,7 +178,7 @@
             <el-col :span="8">
               <el-select v-model="zjzy.cpzy" placeholder="参评专业" clearable
                          :rules="{required: true, message: '参评专业不能为空', trigger: 'blur'}">
-                <el-option
+                <el-option :ref="'zjzy'+index"
                   v-for="dict in cpzyOptions"
                   :key="dict.dictValue"
                   :label="dict.dictLabel"
@@ -217,6 +218,8 @@ export default {
       zjlbOptions: [],
       cpzyOptions: [],
       projectNameOptions: [],
+      cpzyOptions_all:[],
+      myProjectId: '',
       // 遮罩层
       loading: true,
       // 选中数组
@@ -288,11 +291,16 @@ export default {
       });
     },
     change(query) {
-      console.log(query)
+      this.dynamicValidateForm.projectId = query
     },
-    changeZjlb(param) {
-      if (param.indexOf('sw')) {
-        console.log(param)
+    changeZjlb(param,index) {
+      console.log(param)
+      console.log(index)
+      const temp = 'zjzj'+index;
+      if (param.indexOf('sw') > 0) {
+        this.$refs.temp.cpzyOptions = []
+      }else{
+        this.$refs.temp.cpzyOptions = this.cpzyOptions_all
       }
     },
     searchProjectByName(query) {
